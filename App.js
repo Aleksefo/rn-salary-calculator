@@ -10,8 +10,8 @@ export default class App extends React.Component {
 		users: {}
 	}
 
-	RateHourly = 3.75
-	RateEvening = 1.15
+	rateHourly = 3.75
+	rateEvening = 1.15
 
 	csvData = 'Person_Name,Person_ID,Date,Start,End\n' +
 		'Scott Scala,2,2.3.2014,6:00,14:00\n' +
@@ -99,16 +99,16 @@ export default class App extends React.Component {
 		return parsed.data
 	}
 
-	calculateWages() {
-		let objs = {}
+	preCalculateWages() {
+		let objs = []
+		let toState = []
 		this.loadCSV().map(entry => {
-
 			let hoursCombo
 			let worked = ''
 			let overtimeMultipliedHours = 0
 						// Check for existing entry to prevent Undefined error
 			if (objs[entry.Person_ID] === undefined) {
-				objs[entry.Person_ID] = {eveningHours: 0, overtimeMultipliedHours: 0, hoursCombo: 0, worked: ''}
+				objs[entry.Person_ID] = {name: entry.Person_Name, eveningHours: 0, overtimeMultipliedHours: 0, hoursCombo: 0, worked: ''}
 			}
 			// Get evening hours and add them to total eveningHours
 			let eveningHours = this.calculateEveningHours(this.timeToDecimal(entry.Start), this.timeToDecimal(entry.End))
@@ -126,16 +126,47 @@ export default class App extends React.Component {
 				overtimeMultipliedHours += objs[entry.Person_ID].overtimeMultipliedHours
 				hoursCombo = todayHours
 			}
-			//todo finisher to calculate overtime leftovers
-			objs[entry.Person_ID] = {eveningHours, overtimeMultipliedHours, hoursCombo, worked}
+			objs[entry.Person_ID] = {name: entry.Person_Name, eveningHours, overtimeMultipliedHours, hoursCombo, worked}
 			console.log('Calculated Object: ', objs)
 		})
-		//final calculation
+		// for(let entry of Object.entries(objs)) {
+		// 	// console.log('Entry: ', entry)
+		// 	// console.log('EntryH: ', entry.hoursCombo)
+		// 	let lastDayOvertime = this.calculateOvertimeHours(this.hoursCombo)
+		// 	let totalHours = this.overtimeMultipliedHours + lastDayOvertime
+		// 	let name = this.name
+		// 	let salary = totalHours*this.rateHourly + this.eveningHours*this.rateEvening
+		// 	// console.log('Salary: ', salary)
+		// 	toState[entry] = {name, salary}
+		// }
+		// for (i = 0;i < Object.keys(objs).length; i++) {
+		// 	hoursCombo = objs.this[i].hoursCombo
+		// 		console.log('Entry: ', hoursCombo)
+		//
+		// }
+		// for (let key in objs) {
+		// 	hoursCombo = key.hoursCombo
+		// 	console.log('Entry: ', hoursCombo)
+		//
+		// }
+		objs.map(
+			(entry, index) => {
+
+					let lastDayOvertime = this.calculateOvertimeHours(entry.hoursCombo)
+					let totalHours = entry.overtimeMultipliedHours + lastDayOvertime
+					let name = entry.name
+					let salary = totalHours*this.rateHourly + entry.eveningHours*this.rateEvening
+					toState[index] = {name, salary}
+
+			}
+		)
+		console.log('Calculated Object: ', toState)
+		this.setState({users: toState})
 	}
 
 	timeToDecimal(t) {
-		let arr = t.split(':');
-		return parseFloat(parseInt(arr[0], 10) + '.' + parseInt((arr[1] / 6) * 10, 10));
+		let arr = t.split(':')
+		return parseFloat(parseInt(arr[0], 10) + '.' + parseInt((arr[1] / 6) * 10, 10))
 	}
 
 	calculateDailyHours(start, end) {
@@ -201,7 +232,7 @@ export default class App extends React.Component {
 				</View>
 				<Button
 					// onPress={() => this.setModalVisible(true)}
-					onPress={() => this.calculateWages()}
+					onPress={() => this.preCalculateWages()}
 					title="Calculate"
 					color="#841584"
 					accessibilityLabel="Learn more about this purple button"
