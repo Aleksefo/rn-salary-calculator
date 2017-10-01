@@ -14,10 +14,10 @@ export default class App extends React.Component {
 	RateEvening = 1.15
 
 	csvData = 'Person_Name,Person_ID,Date,Start,End\n' +
-		'Scott Scala,2,2.3.2014,4:00,19:00\n' +
-		// 'Janet Java,1,3.3.2014,9:30,17:00\n' +
-		// 'Scott Scala,2,3.3.2014,8:15,16:00\n' +
-		// 'Larry Lolcode,3,3.3.2014,18:00,19:00\n' +
+		// 'Scott Scala,2,2.3.2014,4:00,17:00\n' +
+		// 'Janet Java,1,3.3.2014,4:00,20:00\n' +
+		'Scott Scala,2,3.3.2014,7:00,20:00\n' +
+		// 'Larry Lolcode,3,3.3.2014,7:00,3:00\n' +
 		// 'Janet Java,1,4.3.2014,9:45,16:30\n' +
 		// 'Scott Scala,2,4.3.2014,8:30,16:30\n' +
 		// 'Janet Java,1,5.3.2014,8:00,16:30\n' +
@@ -26,10 +26,10 @@ export default class App extends React.Component {
 		// 'Janet Java,1,6.3.2014,16:00,22:00\n' +
 		// 'Scott Scala,2,6.3.2014,8:15,17:00\n' +
 		// 'Larry Lolcode,3,6.3.2014,5:00,10:00\n' +
-		'Scott Scala,2,13.3.2014,14:00,1:15\n' +
+		'Scott Scala,2,13.3.2014,19:00,3:00\n' +
 		// 'Larry Lolcode,3,14.3.2014,5:00,20:15\n' +
 		// 'Scott Scala,2,15.3.2014,22:00,22:00\n' +
-		'Larry Lolcode,3,30.3.2014,19:00,03:00'
+		'Larry Lolcode,3,30.3.2014,21:00,07:00'
 
 	setModalVisible(visible) {
 		this.setState({modalVisible: visible});
@@ -51,38 +51,35 @@ export default class App extends React.Component {
 	renderNews() {
 		let objs = {}
 		let eveningHours
-		let dailyEveningHours
+		let dailyEveningHours = 0
+		let totalHours
+		let dailyTotalHours = 0
+		let overtimeHours = 0
+		let worked = ''
+		let overtimePayment
 		this.loadCSV().map(entry => {
+			totalHours = this.calculateTotalHours(this.timeToDecimal(entry.Start), this.timeToDecimal(entry.End))
 			eveningHours = this.calculateEveningHours(this.timeToDecimal(entry.Start), this.timeToDecimal(entry.End), entry.Person_ID)
-			console.log('eveningHours: ', eveningHours)
-
+			// console.log('eveningHours: ', eveningHours)
 			if (objs[entry.Person_ID] === undefined) {
-				// dailyEveningHours = this.state.users[id].dailyEveningHours ? newObj[id].dailyEveningHours + eveningHours : eveningHours
-				dailyEveningHours = eveningHours
-			} else {
-				dailyEveningHours = objs[entry.Person_ID].dailyEveningHours + eveningHours
+				objs[entry.Person_ID] = {dailyEveningHours, dailyTotalHours, overtimeHours, worked}
 			}
-			objs[entry.Person_ID] = {dailyEveningHours}
+				dailyEveningHours = objs[entry.Person_ID].dailyEveningHours + eveningHours
+				dailyTotalHours = objs[entry.Person_ID].dailyTotalHours + totalHours
+			if (entry.Date === objs[entry.Person_ID].worked) {
+				overtimeHours += totalHours
+			} else {
+				worked = entry.Date
+				overtimeHours = objs[entry.Person_ID].overtimeHours
+				overtimePayment = this.calculateOvertimeHours(overtimeHours)
+				overtimeHours = totalHours
+			}
+
+			//finisher to calculate overtime leftovers
+			objs[entry.Person_ID] = {dailyEveningHours, dailyTotalHours, overtimeHours, worked}
 			console.log('Calculated Object: ', objs)
-			// objs.push({})
 		})
 	}
-
-// 	let newObj = {...this.state.users}
-// 	if( this.state.users[id]  === undefined ) {
-// 	// dailyEveningHours = this.state.users[id].dailyEveningHours ? newObj[id].dailyEveningHours + eveningHours : eveningHours
-// 	dailyEveningHours = eveningHours
-// } else {
-// 	dailyEveningHours = newObj[id].dailyEveningHours + eveningHours
-// }
-// newObj[id] = {dailyEveningHours}
-// // this.setState({ users: newObj })
-// this.setState(function(currentState) {
-// 	if( this.state.users[id]  === undefined ) {
-// 		return {users: newObj}
-// 	} return {users: currentState.users[id].dailyEveningHours + eveningHours}
-// })
-// console.log('eveningHours Object: ', newObj)
 
 	timeToDecimal(t) {
 		let arr = t.split(':');
@@ -100,27 +97,36 @@ export default class App extends React.Component {
 		end = end + (end < start ? 24 : 0)
 		// console.log('newEnd: ',end)
 		if (30 > end && end > 18) {
-			eveningHours += end - ( start > 18 ? (18 * 2 - start ) : 18 )
-			// console.log('30 > end > 18: ',EveningHours)
+			eveningHours += end - ( start > 18 ? 24 : 18 )
+			// console.log('30 > end > 18: ',eveningHours)
+		}
+		if (30 < end ) {
+			eveningHours += 30 - ( start > 18 ? 24 : 18 )
+			// console.log('30 < end: ',eveningHours)
 		}
 		if (start > 18) {
-			eveningHours += 24 + 6 - start
-			// console.log('start > 18: ',EveningHours)
+			eveningHours += 24 - start
+			// console.log('start > 18: ',eveningHours)
 		}
 		if (start < 6) {
 			eveningHours += 6 - start
-			// console.log('start < 6: ',EveningHours)
+			// console.log('start < 6: ',eveningHours)
 		}
 		return eveningHours
 	}
 
-	calculateOvertimeHours(id, date, hours) {
-		if (date !== this.state.currentDate) {
-			this.setState({currentDate: date})
-			//code
-		} else {
-			// let previousState = this.state.
-		}
+	calculateOvertimeHours(hours) {
+		let extraHours = hours
+			if (hours > 8) {
+				extraHours += ( hours - 8 ) * 0.25
+				if (hours > 10) {
+					extraHours += ( hours - 10 ) * 0.25
+					if (hours > 12) {
+						extraHours = ( hours - 12 ) * 0.5
+					}
+				}
+			}
+			return extraHours
 	}
 
 
@@ -183,7 +189,7 @@ export default class App extends React.Component {
 							<Text
 								style={{flex: 1}}>{this.calculateTotalHours(this.timeToDecimal(item.Start), this.timeToDecimal(item.End))}</Text>
 							<Text
-								style={{flex: 1}}>{() => this.calculateEveningHours(this.timeToDecimal(item.Start), this.timeToDecimal(item.End), item.Person_ID)}</Text>
+								style={{flex: 1}}>{this.calculateEveningHours(this.timeToDecimal(item.Start), this.timeToDecimal(item.End), item.Person_ID)}</Text>
 							{/*<Text*/}
 							{/*style={{flex: 1}}>{this.calculateOvertimeHours(item.Person_ID, item.Date, this.calculateTotalHours(this.timeToDecimal(item.Start), this.timeToDecimal(item.End)))}</Text>*/}
 						</View>
