@@ -14,22 +14,73 @@ export default class App extends React.Component {
 	RateEvening = 1.15
 
 	csvData = 'Person_Name,Person_ID,Date,Start,End\n' +
-		// 'Scott Scala,2,2.3.2014,4:00,17:00\n' +
-		// 'Janet Java,1,3.3.2014,4:00,20:00\n' +
-		'Scott Scala,2,3.3.2014,7:00,20:00\n' +
-		// 'Larry Lolcode,3,3.3.2014,7:00,3:00\n' +
-		// 'Janet Java,1,4.3.2014,9:45,16:30\n' +
-		// 'Scott Scala,2,4.3.2014,8:30,16:30\n' +
-		// 'Janet Java,1,5.3.2014,8:00,16:30\n' +
-		// 'Scott Scala,2,5.3.2014,9:00,17:00\n' +
-		// 'Janet Java,1,6.3.2014,8:00,12:00\n' +
-		// 'Janet Java,1,6.3.2014,16:00,22:00\n' +
-		// 'Scott Scala,2,6.3.2014,8:15,17:00\n' +
-		// 'Larry Lolcode,3,6.3.2014,5:00,10:00\n' +
-		'Scott Scala,2,13.3.2014,19:00,3:00\n' +
-		// 'Larry Lolcode,3,14.3.2014,5:00,20:15\n' +
-		// 'Scott Scala,2,15.3.2014,22:00,22:00\n' +
-		'Larry Lolcode,3,30.3.2014,21:00,07:00'
+		'Scott Scala,2,2.3.2014,6:00,14:00\n' +
+		'Janet Java,1,3.3.2014,9:30,17:00\n' +
+		'Scott Scala,2,3.3.2014,8:15,16:00\n' +
+		'Larry Lolcode,3,3.3.2014,18:00,19:00\n' +
+		'Janet Java,1,4.3.2014,9:45,16:30\n' +
+		'Scott Scala,2,4.3.2014,8:30,16:30\n' +
+		'Janet Java,1,5.3.2014,8:00,16:30\n' +
+		'Scott Scala,2,5.3.2014,9:00,17:00\n' +
+		'Janet Java,1,6.3.2014,8:00,12:00\n' +
+		'Janet Java,1,6.3.2014,16:00,22:00\n' +
+		'Scott Scala,2,6.3.2014,8:15,17:00\n' +
+		'Larry Lolcode,3,6.3.2014,5:00,10:00\n' +
+		'Janet Java,1,7.3.2014,9:00,17:00\n' +
+		'Scott Scala,2,7.3.2014,8:15,17:00\n' +
+		'Larry Lolcode,3,7.3.2014,5:00,10:00\n' +
+		'Scott Scala,2,9.3.2014,14:00,16:00\n' +
+		'Janet Java,1,10.3.2014,8:45,16:45\n' +
+		'Scott Scala,2,10.3.2014,8:15,16:15\n' +
+		'Scott Scala,2,10.3.2014,22:00,23:00\n' +
+		'Larry Lolcode,3,10.3.2014,8:00,16:00\n' +
+		'Janet Java,1,11.3.2014,9:00,17:30\n' +
+		'Scott Scala,2,11.3.2014,8:30,17:00\n' +
+		'Janet Java,1,12.3.2014,16:00,2:00\n' +
+		'Scott Scala,2,12.3.2014,9:00,17:30\n' +
+		'Larry Lolcode,3,12.3.2014,12:30,12:45\n' +
+		'Janet Java,1,13.3.2014,10:00,15:00\n' +
+		'Scott Scala,2,13.3.2014,14:00,1:15\n' +
+		'Larry Lolcode,3,13.3.2014,10:00,11:00\n' +
+		'Janet Java,1,14.3.2014,9:00,17:00\n' +
+		'Scott Scala,2,14.3.2014,9:30,17:00\n' +
+		'Larry Lolcode,3,14.3.2014,8:45,15:45\n' +
+		'Larry Lolcode,3,15.3.2014,9:00,10:15\n' +
+		'Larry Lolcode,3,15.3.2014,12:30,13:15\n' +
+		'Larry Lolcode,3,15.3.2014,15:30,17:15\n' +
+		'Janet Java,1,16.3.2014,8:00,22:00\n' +
+		'Janet Java,1,17.3.2014,8:45,16:45\n' +
+		'Scott Scala,2,17.3.2014,8:30,16:30\n' +
+		'Larry Lolcode,3,17.3.2014,8:30,15:30\n' +
+		'Janet Java,1,18.3.2014,9:30,16:30\n' +
+		'Scott Scala,2,18.3.2014,8:30,16:30\n' +
+		'Larry Lolcode,3,18.3.2014,9:00,15:45\n' +
+		'Janet Java,1,19.3.2014,9:30,16:30\n' +
+		'Scott Scala,2,19.3.2014,12:00,14:00\n' +
+		'Larry Lolcode,3,19.3.2014,8:30,15:45\n' +
+		'Janet Java,1,20.3.2014,2:00,6:00\n' +
+		'Janet Java,1,20.3.2014,10:00,19:00\n' +
+		'Scott Scala,2,20.3.2014,12:00,14:00\n' +
+		'Larry Lolcode,3,20.3.2014,1:00,3:00\n' +
+		'Janet Java,1,21.3.2014,8:15,16:15\n' +
+		'Scott Scala,2,21.3.2014,10:00,18:00\n' +
+		'Larry Lolcode,3,21.3.2014,6:00,17:00\n' +
+		'Scott Scala,2,23.3.2014,14:00,14:30\n' +
+		'Scott Scala,2,23.3.2014,15:00,15:15\n' +
+		'Janet Java,1,24.3.2014,8:45,16:30\n' +
+		'Scott Scala,2,24.3.2014,22:00,6:00\n' +
+		'Janet Java,1,25.3.2014,9:30,18:30\n' +
+		'Scott Scala,2,25.3.2014,9:30,17:30\n' +
+		'Larry Lolcode,3,25.3.2014,9:00,16:00\n' +
+		'Janet Java,1,26.3.2014,9:30,16:45\n' +
+		'Scott Scala,2,26.3.2014,10:00,18:00\n' +
+		'Larry Lolcode,3,26.3.2014,9:30,17:00\n' +
+		'Janet Java,1,27.3.2014,9:00,16:45\n' +
+		'Scott Scala,2,27.3.2014,9:00,17:00\n' +
+		'Janet Java,1,28.3.2014,10:00,14:00\n' +
+		'Scott Scala,2,28.3.2014,8:30,19:00\n' +
+		'Larry Lolcode,3,28.3.2014,6:00,16:00\n' +
+		'Larry Lolcode,3,30.3.2014,8:00,16:00'
 
 	setModalVisible(visible) {
 		this.setState({modalVisible: visible});
@@ -48,37 +99,38 @@ export default class App extends React.Component {
 		return parsed.data
 	}
 
-	renderNews() {
+	calculateWages() {
 		let objs = {}
-		let eveningHours
-		let dailyEveningHours = 0
-		let totalHours
-		let dailyTotalHours = 0
-		let overtimeHours = 0
-		let worked = ''
-		let overtimePayment
 		this.loadCSV().map(entry => {
-			totalHours = this.calculateTotalHours(this.timeToDecimal(entry.Start), this.timeToDecimal(entry.End))
-			eveningHours = this.calculateEveningHours(this.timeToDecimal(entry.Start), this.timeToDecimal(entry.End), entry.Person_ID)
-			// console.log('eveningHours: ', eveningHours)
+
+			let hoursCombo
+			let worked = ''
+			let overtimeMultipliedHours = 0
+						// Check for existing entry to prevent Undefined error
 			if (objs[entry.Person_ID] === undefined) {
-				objs[entry.Person_ID] = {dailyEveningHours, dailyTotalHours, overtimeHours, worked}
+				objs[entry.Person_ID] = {eveningHours: 0, overtimeMultipliedHours: 0, hoursCombo: 0, worked: ''}
 			}
-				dailyEveningHours = objs[entry.Person_ID].dailyEveningHours + eveningHours
-				dailyTotalHours = objs[entry.Person_ID].dailyTotalHours + totalHours
+			// Get evening hours and add them to total eveningHours
+			let eveningHours = this.calculateEveningHours(this.timeToDecimal(entry.Start), this.timeToDecimal(entry.End))
+			eveningHours += objs[entry.Person_ID].eveningHours
+			// Gets total daily hours
+			let todayHours = this.calculateDailyHours(this.timeToDecimal(entry.Start), this.timeToDecimal(entry.End))
+			// dailyHours += objs[entry.Person_ID].dailyHours
+			// Overtime calculations
 			if (entry.Date === objs[entry.Person_ID].worked) {
-				overtimeHours += totalHours
+				hoursCombo = objs[entry.Person_ID].hoursCombo + todayHours
 			} else {
 				worked = entry.Date
-				overtimeHours = objs[entry.Person_ID].overtimeHours
-				overtimePayment = this.calculateOvertimeHours(overtimeHours)
-				overtimeHours = totalHours
+				hoursCombo = objs[entry.Person_ID].hoursCombo
+				overtimeMultipliedHours = this.calculateOvertimeHours(hoursCombo)
+				overtimeMultipliedHours += objs[entry.Person_ID].overtimeMultipliedHours
+				hoursCombo = todayHours
 			}
-
-			//finisher to calculate overtime leftovers
-			objs[entry.Person_ID] = {dailyEveningHours, dailyTotalHours, overtimeHours, worked}
+			//todo finisher to calculate overtime leftovers
+			objs[entry.Person_ID] = {eveningHours, overtimeMultipliedHours, hoursCombo, worked}
 			console.log('Calculated Object: ', objs)
 		})
+		//final calculation
 	}
 
 	timeToDecimal(t) {
@@ -86,31 +138,24 @@ export default class App extends React.Component {
 		return parseFloat(parseInt(arr[0], 10) + '.' + parseInt((arr[1] / 6) * 10, 10));
 	}
 
-	calculateTotalHours(start, end) {
-
+	calculateDailyHours(start, end) {
 		return end + (end < start ? 24 : 0) - start
 	}
 
-	calculateEveningHours(start, end, id) {
+	calculateEveningHours(start, end) {
 		let eveningHours = 0
-		// console.log('NextEntry: ', start, end)
 		end = end + (end < start ? 24 : 0)
-		// console.log('newEnd: ',end)
 		if (30 > end && end > 18) {
 			eveningHours += end - ( start > 18 ? 24 : 18 )
-			// console.log('30 > end > 18: ',eveningHours)
 		}
 		if (30 < end ) {
 			eveningHours += 30 - ( start > 18 ? 24 : 18 )
-			// console.log('30 < end: ',eveningHours)
 		}
 		if (start > 18) {
 			eveningHours += 24 - start
-			// console.log('start > 18: ',eveningHours)
 		}
 		if (start < 6) {
 			eveningHours += 6 - start
-			// console.log('start < 6: ',eveningHours)
 		}
 		return eveningHours
 	}
@@ -122,7 +167,7 @@ export default class App extends React.Component {
 				if (hours > 10) {
 					extraHours += ( hours - 10 ) * 0.25
 					if (hours > 12) {
-						extraHours = ( hours - 12 ) * 0.5
+						extraHours += ( hours - 12 ) * 0.5
 					}
 				}
 			}
@@ -156,7 +201,7 @@ export default class App extends React.Component {
 				</View>
 				<Button
 					// onPress={() => this.setModalVisible(true)}
-					onPress={() => this.renderNews()}
+					onPress={() => this.calculateWages()}
 					title="Calculate"
 					color="#841584"
 					accessibilityLabel="Learn more about this purple button"
@@ -187,7 +232,7 @@ export default class App extends React.Component {
 							<Text style={{flex: 1, textAlign: 'right', marginRight: 5,}}>{this.timeToDecimal(item.Start)}</Text>
 							<Text style={{flex: 1}}>{this.timeToDecimal(item.End)}</Text>
 							<Text
-								style={{flex: 1}}>{this.calculateTotalHours(this.timeToDecimal(item.Start), this.timeToDecimal(item.End))}</Text>
+								style={{flex: 1}}>{this.calculateDailyHours(this.timeToDecimal(item.Start), this.timeToDecimal(item.End))}</Text>
 							<Text
 								style={{flex: 1}}>{this.calculateEveningHours(this.timeToDecimal(item.Start), this.timeToDecimal(item.End), item.Person_ID)}</Text>
 							{/*<Text*/}
