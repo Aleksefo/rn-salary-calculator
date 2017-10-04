@@ -13,6 +13,10 @@ export default class App extends React.Component {
 	rateHourly = 3.75
 	rateEvening = 1.15
 
+	componentDidMount() {
+		this.preCalculateWages()
+	}
+
 	csvData = 'Person_Name,Person_ID,Date,Start,End\n' +
 		'Scott Scala,2,2.3.2014,6:00,14:00\n' +
 		'Janet Java,1,3.3.2014,9:30,17:00\n' +
@@ -84,8 +88,9 @@ export default class App extends React.Component {
 
 	setModalVisible(visible) {
 		this.setState({modalVisible: visible});
-		console.log(this.state.users)
 	}
+
+
 
 	loadCSV() {
 		let parsed = Papa.parse(this.csvData, {
@@ -127,40 +132,21 @@ export default class App extends React.Component {
 				hoursCombo = todayHours
 			}
 			objs[entry.Person_ID] = {name: entry.Person_Name, eveningHours, overtimeMultipliedHours, hoursCombo, worked}
-			console.log('Calculated Object: ', objs)
+			// console.log('Calculated Object: ', objs)
 		})
-		// for(let entry of Object.entries(objs)) {
-		// 	// console.log('Entry: ', entry)
-		// 	// console.log('EntryH: ', entry.hoursCombo)
-		// 	let lastDayOvertime = this.calculateOvertimeHours(this.hoursCombo)
-		// 	let totalHours = this.overtimeMultipliedHours + lastDayOvertime
-		// 	let name = this.name
-		// 	let salary = totalHours*this.rateHourly + this.eveningHours*this.rateEvening
-		// 	// console.log('Salary: ', salary)
-		// 	toState[entry] = {name, salary}
-		// }
-		// for (i = 0;i < Object.keys(objs).length; i++) {
-		// 	hoursCombo = objs.this[i].hoursCombo
-		// 		console.log('Entry: ', hoursCombo)
-		//
-		// }
-		// for (let key in objs) {
-		// 	hoursCombo = key.hoursCombo
-		// 	console.log('Entry: ', hoursCombo)
-		//
-		// }
 		objs.map(
 			(entry, index) => {
 
 					let lastDayOvertime = this.calculateOvertimeHours(entry.hoursCombo)
 					let totalHours = entry.overtimeMultipliedHours + lastDayOvertime
 					let name = entry.name
-					let salary = totalHours*this.rateHourly + entry.eveningHours*this.rateEvening
-					toState[index] = {name, salary}
+					let rawSalary = totalHours*this.rateHourly + entry.eveningHours*this.rateEvening
+					let salary = Math.round(rawSalary*100)/100
+					toState[index-1] = {name, salary}
 
 			}
 		)
-		console.log('Calculated Object: ', toState)
+		// console.log('Calculated Object: ', toState)
 		this.setState({users: toState})
 	}
 
@@ -220,7 +206,25 @@ export default class App extends React.Component {
 					>
 						<View style={{margin: 22}}>
 							<View>
-								<Text>Hello World!</Text>
+								<FlatList
+									data={this.state.users}
+									// keyExtractor={item => item.Date}
+									renderItem={({item}) =>
+										<View style={styles.container}>
+											<Text style={{
+												flex: 0.5,
+												flexDirection: 'row',
+												justifyContent: 'center',
+												textAlign: 'right',
+												alignItems: 'center',
+												backgroundColor: 'blue',
+											}}>{item.name}</Text>
+											<Text style={{flex: 3}}>{item.salary}</Text>
+
+										</View>
+
+									}
+								/>
 								<TouchableHighlight onPress={() => {
 									this.setModalVisible(!this.state.modalVisible)
 								}}>
@@ -232,7 +236,7 @@ export default class App extends React.Component {
 				</View>
 				<Button
 					// onPress={() => this.setModalVisible(true)}
-					onPress={() => this.preCalculateWages()}
+					onPress={() => this.setModalVisible(true)}
 					title="Calculate"
 					color="#841584"
 					accessibilityLabel="Learn more about this purple button"
