@@ -1,6 +1,8 @@
 import React from 'react';
 import {Button, FlatList, Modal, StyleSheet, Text, TouchableHighlight, View} from 'react-native';
 import Papa from 'papaparse'
+import ListDays from './src/ListDays'
+import ShowModal from './src/ShowModal'
 
 export default class App extends React.Component {
 
@@ -130,52 +132,8 @@ export default class App extends React.Component {
 	render() {
 		return (
 			<View style={{marginTop: Expo.Constants.statusBarHeight}}>
-				<View style={{marginLeft: 22}}>
-					<Modal
-						animationType="slide"
-						transparent={false}
-						visible={this.state.modalVisible}
-						onRequestClose={() => {
-							alert("Modal has been closed.")
-						}}
-					>
-						<View style={{margin: 22}}>
-							<View>
-								<FlatList
-									data={this.state.users}
-									// keyExtractor={item => item.Date}
-									renderItem={({item}) =>
-										<View style={styles.container}>
-											<Text style={{
-												flex: 0.5,
-												flexDirection: 'row',
-												justifyContent: 'center',
-												textAlign: 'right',
-												alignItems: 'center',
-												backgroundColor: 'blue',
-											}}>{item.name}</Text>
-											<Text style={{flex: 3}}>{item.salary}</Text>
+				<ShowModal modalVisible={this.state.modalVisible} users={this.state.users}/>
 
-										</View>
-
-									}
-								/>
-								<TouchableHighlight onPress={() => {
-									this.setModalVisible(!this.state.modalVisible)
-								}}>
-									<Text>Hide Modal</Text>
-								</TouchableHighlight>
-							</View>
-						</View>
-					</Modal>
-				</View>
-				<Button
-					// onPress={() => this.setModalVisible(true)}
-					onPress={() => this.setModalVisible(true)}
-					title="Calculate"
-					color="#841584"
-					accessibilityLabel="Learn more about this purple button"
-				/>
 				<Button
 					// onPress={() => this.setModalVisible(true)}
 					onPress={() => console.log(this.state)}
@@ -184,31 +142,10 @@ export default class App extends React.Component {
 					accessibilityLabel="Learn more about this purple button"
 				/>
 				<FlatList
-
 					data={this.state.parsedData}
 					// keyExtractor={item => item.Date}
 					renderItem={({item}) =>
-						<View style={styles.container}>
-							<Text style={{
-								flex: 0.5,
-								flexDirection: 'row',
-								justifyContent: 'center',
-								textAlign: 'right',
-								alignItems: 'center',
-								backgroundColor: 'blue',
-							}}>{item['Person ID']}</Text>
-							<Text style={{flex: 3}}>{item['Person Name']}</Text>
-							<Text style={{flex: 2, textAlign: 'right',}}>{item.Date}</Text>
-							<Text style={{flex: 1, textAlign: 'right', marginRight: 5,}}>{this.timeToDecimal(item.Start)}</Text>
-							<Text style={{flex: 1}}>{this.timeToDecimal(item.End)}</Text>
-							<Text
-								style={{flex: 1}}>{this.calculateDailyHours(this.timeToDecimal(item.Start), this.timeToDecimal(item.End))}</Text>
-							<Text
-								style={{flex: 1}}>{this.calculateEveningHours(this.timeToDecimal(item.Start), this.timeToDecimal(item.End), item.Person_ID)}</Text>
-							{/*<Text*/}
-							{/*style={{flex: 1}}>{this.calculateOvertimeHours(item.Person_ID, item.Date, this.calculateTotalHours(this.timeToDecimal(item.Start), this.timeToDecimal(item.End)))}</Text>*/}
-						</View>
-
+						<ListDays item={item}/>
 					}
 				/>
 			</View>
