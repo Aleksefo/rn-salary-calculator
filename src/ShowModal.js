@@ -1,6 +1,7 @@
 import React from 'react'
 import {View, StyleSheet, FlatList, Text, Modal, TouchableHighlight, Button} from 'react-native'
 
+// Modal components used to show calculated salary data
 export default class ShowModal extends React.Component {
 	constructor(props) {
 		super(props);
@@ -9,7 +10,6 @@ export default class ShowModal extends React.Component {
 		}
 	}
 
-
 	setModalVisible(visible) {
 		this.setState({modalVisible: visible})
 	}
@@ -17,7 +17,7 @@ export default class ShowModal extends React.Component {
 	render() {
 		// const {} = styles
 		return (
-			<View >
+			<View>
 				<Modal
 					animationType="slide"
 					transparent={false}
@@ -26,35 +26,34 @@ export default class ShowModal extends React.Component {
 						this.setModalVisible(false)
 					}}
 				>
-						<View>
-							<FlatList
-								data={this.props.users}
-								// keyExtractor={item => item.Date}
-								renderItem={({item}) =>
-									<View style={styles.container}>
-										<Text style={{
-											flex: 0.5,
-											flexDirection: 'row',
-											justifyContent: 'center',
-											textAlign: 'right',
-											alignItems: 'center',
-											backgroundColor: 'blue',
-										}}>{item.name}</Text>
-										<Text style={{flex: 3}}>{item.salary}</Text>
+					<View>
+						<FlatList
+							data={this.props.users}
+							// keyExtractor={item => item.Date}
+							renderItem={({item}) =>
+								<View style={styles.container}>
+									<Text style={{
+										flex: 0.5,
+										flexDirection: 'row',
+										justifyContent: 'center',
+										textAlign: 'right',
+										alignItems: 'center',
+										backgroundColor: 'blue',
+									}}>{item.name}</Text>
+									<Text style={{flex: 3}}>{item.salary}</Text>
 
-									</View>
+								</View>
 
-								}
-							/>
-							<TouchableHighlight onPress={() => {
-								this.setModalVisible(!this.state.modalVisible)
-							}}>
-								<Text>Hide Modal</Text>
-							</TouchableHighlight>
-						</View>
+							}
+						/>
+						<TouchableHighlight onPress={() => {
+							this.setModalVisible(!this.state.modalVisible)
+						}}>
+							<Text>Hide Modal</Text>
+						</TouchableHighlight>
+					</View>
 				</Modal>
 				<Button
-					// onPress={() => this.setModalVisible(true)}
 					onPress={() => this.setModalVisible(true)}
 					title="Calculate"
 					color="#841584"
