@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "rn-salary-calculator",
-    "description": "An empty new project",
+    "description": "RN Salary Calculator",
     "slug": "rn-salary-calculator",
     "privacy": "public",
     "sdkVersion": "21.0.0",

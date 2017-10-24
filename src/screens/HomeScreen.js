@@ -1,10 +1,11 @@
 import React from 'react';
-import {Button, FlatList, List, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {Button, FlatList, Linking, StyleSheet, Text, TouchableOpacity, View, AsyncStorage} from 'react-native';
 import Papa from 'papaparse'
 import {Sae} from 'react-native-textinput-effects'
 import {FontAwesome} from '@expo/vector-icons'
 import ListDays from './ListDays'
 import ShowModal from './ShowModal'
+
 
 export default class HomeScreen extends React.Component {
 
@@ -12,6 +13,7 @@ export default class HomeScreen extends React.Component {
 		modalVisible: false,
 		currentDate: '',
 		parsedData: [],
+		parsedError: false,
 		users: {},
 		url: 'https://raw.github.com/Aleksefo/rn-salary-calculator/master/src/dataList.csv'
 	}
@@ -31,35 +33,72 @@ export default class HomeScreen extends React.Component {
 	rateOvertimeNextHours = 0.25   // Hourly Wage + 50%
 	rateOvertimeRest = 0.5      // Hourly Wage + 100%
 
+	// Navigation options for React Navigation
 	static navigationOptions = ({navigation}) => ({
 		title: 'Salary Calculator',
 
 		headerRight: <TouchableOpacity onPress={() => navigation.navigate('Add')}>
 			{/*<Icons name="ios-car" size={28} color="white" />*/}
-			<Text style={styles.add}>Add</Text>
+			<Text style={styles.add}>Settings</Text>
 		</TouchableOpacity>,
 	})
 
 	componentDidMount() {
-		this.loadCSV(this.state.url)
+		this.checkURL(this.state.url)
+		this.loadSavedData()
 	}
 
-	setModalVisible(visible) {
-		this.setState({modalVisible: visible})
+	// Loads CSV data from local storage
+	async loadSavedData() {
+		try {
+			await AsyncStorage.getItem('CSVData')
+				.then(JSON.parse).then(CSVData => {
+					if (CSVData !== null) {
+						this.setState({parsedData: CSVData})
+					} else {
+						console.log('nothing to load')
+					}
+				})
+		} catch (error) {
+			console.log('loadSavedData error ' + error)
+		}
+	}
+	// Saves CSV data to local storage
+	async saveDataLocally(data) {
+		try {
+			await AsyncStorage.setItem('CSVData', JSON.stringify(data))
+		} catch (error) {
+			console.log('saveDataLocally error ' + error)
+		}
 	}
 
-	//Loads CSV from a remote source, sets the parsed data as State to render it as a list later, and runs salary calculation function
+	// Loads CSV from a remote source, sets the parsed data as State to render it as a list later, and runs salary calculation function
 	loadCSV(url) {
 		let that = this
 		Papa.parse(url, {
 			download: true,
 			complete: function (results) {
-				that.setState({parsedData: results.data})
+				that.setState({parsedData: results.data, parsedError: false})
+				that.saveDataLocally(results.data)
 				that.preCalculateWages(results.data)
+			},
+			error: function (err, file, inputElem, reason) {
+				that.setState({parsedError: true})
 			},
 			header: true,
 			skipEmptyLines: true,
 		})
+	}
+
+	// Checks URL for being an actual URL
+	checkURL(url) {
+		Linking.canOpenURL(url).then(supported => {
+			if (!supported) {
+				this.setState({parsedError: true})
+			} else {
+				return this.loadCSV(url)
+			}
+		}).catch(err => console.error('An error occurred', err));
 	}
 
 	//Calculates all CSV data into salaries.
@@ -167,6 +206,23 @@ export default class HomeScreen extends React.Component {
 
 
 	render() {
+
+		// If URL is incorrect an error message appears
+		const parsedError = this.state.parsedError
+		let shiftsList = null
+		if (parsedError) {
+			shiftsList = <Text>Cannot parse salary data. Please check the link for errors.</Text>
+		} else {
+			shiftsList =
+				<FlatList
+					data={this.state.parsedData}
+					keyExtractor={(item, index) => index}
+					renderItem={({item}) =>
+						<ListDays item={item}/>
+					}
+				/>
+		}
+
 		return (
 			<View style={{flex: 1}}>
 				<View style={{flex: 18}}>
@@ -181,7 +237,7 @@ export default class HomeScreen extends React.Component {
 						onChangeText={(url) => this.setState({url})}
 					/>
 					<Button
-						onPress={() => this.loadCSV(this.state.url)}
+						onPress={() => this.checkURL(this.state.url)}
 						title="Load new CSV"
 						color="#841884"
 						accessibilityLabel="Load new CSV"
@@ -199,13 +255,7 @@ export default class HomeScreen extends React.Component {
 						color="#841884"
 						accessibilityLabel="Learn more about this purple button"
 					/>
-					<FlatList
-						data={this.state.parsedData}
-						keyExtractor={(item, index) => index}
-						renderItem={({item}) =>
-							<ListDays item={item}/>
-						}
-					/>
+					{shiftsList}
 				</View>
 				<View style={{flex: 1}}>
 					<ShowModal modalVisible={this.state.modalVisible} users={this.state.users}/>
