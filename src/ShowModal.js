@@ -55,9 +55,9 @@ export default class ShowModal extends React.Component {
 				</Modal>
 				<Button
 					onPress={() => this.setModalVisible(true)}
-					title="Calculate"
+					title="Calculate salaries"
 					color="#841584"
-					accessibilityLabel="Learn more about this purple button"
+					accessibilityLabel="Calculate salaries"
 				/>
 			</View>
 		)

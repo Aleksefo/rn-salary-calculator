@@ -1,6 +1,8 @@
 import React from 'react';
-import {Button, FlatList, Modal, StyleSheet, Text, TouchableHighlight, View} from 'react-native';
+import {Button, FlatList, List, StyleSheet, View} from 'react-native';
 import Papa from 'papaparse'
+import {Sae} from 'react-native-textinput-effects'
+import {FontAwesome} from '@expo/vector-icons'
 import ListDays from './src/ListDays'
 import ShowModal from './src/ShowModal'
 
@@ -10,7 +12,8 @@ export default class App extends React.Component {
 		modalVisible: false,
 		currentDate: '',
 		parsedData: [],
-		users: {}
+		users: {},
+		url: 'https://raw.github.com/Aleksefo/rn-salary-calculator/master/src/dataList.csv'
 	}
 
 	// Hourly wage for all employees
@@ -30,7 +33,7 @@ export default class App extends React.Component {
 
 
 	componentDidMount() {
-		this.loadCSV()
+		this.loadCSV(this.state.url)
 	}
 
 	setModalVisible(visible) {
@@ -38,9 +41,9 @@ export default class App extends React.Component {
 	}
 
 	//Loads CSV from a remote source, sets the parsed data as State to render it as a list later, and runs salary calculation function
-	loadCSV() {
-		var that = this
-		Papa.parse('https://raw.github.com/Aleksefo/rn-salary-calculator/master/src/dataList.csv', {
+	loadCSV(url) {
+		let that = this
+		Papa.parse(url, {
 			download: true,
 			complete: function (results) {
 				that.setState({parsedData: results.data})
@@ -121,11 +124,11 @@ export default class App extends React.Component {
 		// Check if Overtime ended the same day or next
 		end = end + (end < start ? 24 : 0)
 		// Calculations depending on when Evening hours start and end
-		if ((24+this.hoursEveningEnd) > end && end > this.hoursEveningStart) {
+		if ((24 + this.hoursEveningEnd) > end && end > this.hoursEveningStart) {
 			eveningHours += end - ( start > this.hoursEveningStart ? 24 : this.hoursEveningStart )
 		}
-		if ((24+this.hoursEveningEnd) < end) {
-			eveningHours += (24+this.hoursEveningEnd) - ( start > this.hoursEveningStart ? 24 : this.hoursEveningStart )
+		if ((24 + this.hoursEveningEnd) < end) {
+			eveningHours += (24 + this.hoursEveningEnd) - ( start > this.hoursEveningStart ? 24 : this.hoursEveningStart )
 		}
 		if (start > this.hoursEveningStart) {
 			eveningHours += 24 - start
@@ -157,22 +160,48 @@ export default class App extends React.Component {
 
 	render() {
 		return (
-			<View style={{marginTop: Expo.Constants.statusBarHeight}}>
-				<ShowModal modalVisible={this.state.modalVisible} users={this.state.users}/>
-				<Button
-					// onPress={() => this.setModalVisible(true)}
-					onPress={() => console.log(this.state)}
-					title="CurrentState"
-					color="#841884"
-					accessibilityLabel="Learn more about this purple button"
-				/>
-				<FlatList
-					data={this.state.parsedData}
-					keyExtractor={(item, index) => index}
-					renderItem={({item}) =>
-						<ListDays item={item}/>
-					}
-				/>
+			<View style={{flex: 1}}>
+				<View style={{flex: 18, marginTop: Expo.Constants.statusBarHeight}}>
+					<Sae
+						label={'Paste your CSV link here'}
+						iconClass={FontAwesome}
+						iconName={'pencil'}
+						iconColor={'green'}
+						// TextInput props
+						autoCapitalize={'none'}
+						autoCorrect={false}
+						onChangeText={(url) => this.setState({url})}
+					/>
+					<Button
+						onPress={() => this.loadCSV(this.state.url)}
+						title="Load new CSV"
+						color="#841884"
+						accessibilityLabel="Load new CSV"
+					/>
+					<Button
+						onPress={() => this.setState({parsedData: ''})}
+						title="Clear Data"
+						color="#841884"
+						accessibilityLabel="Clear Data"
+					/>
+					<Button
+						// onPress={() => this.setModalVisible(true)}
+						onPress={() => console.log(this.state)}
+						title="CurrentState"
+						color="#841884"
+						accessibilityLabel="Learn more about this purple button"
+					/>
+					<FlatList
+						data={this.state.parsedData}
+						keyExtractor={(item, index) => index}
+						renderItem={({item}) =>
+							<ListDays item={item}/>
+						}
+					/>
+				</View>
+				<View style={{flex: 1}}>
+					<ShowModal modalVisible={this.state.modalVisible} users={this.state.users}/>
+				</View>
 			</View>
 		);
 	}
