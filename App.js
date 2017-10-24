@@ -13,8 +13,21 @@ export default class App extends React.Component {
 		users: {}
 	}
 
+	// Hourly wage for all employees
 	rateHourly = 3.75
+	// Evening work compensation for hours between hoursEveningStart and hoursEveningEnd
 	rateEvening = 1.15
+	hoursEveningStart = 18
+	hoursEveningEnd = 6
+	// Overtime bonus. Each value adds to sum of previous value, i.e. rateOvertimeRest bonus is 0.5+0.25+0.25
+	// Overtime compensation is paid when daily working hours exceeds normal hours.
+	hoursNormaltime = 8
+	hoursOvertimeFirstHours = 2
+	hoursOvertimeNextHours = 2
+	rateOvertimeFirstHours = 0.25  // Hourly Wage + 25%
+	rateOvertimeNextHours = 0.25   // Hourly Wage + 50%
+	rateOvertimeRest = 0.5      // Hourly Wage + 100%
+
 
 	componentDidMount() {
 		this.loadCSV()
@@ -24,7 +37,7 @@ export default class App extends React.Component {
 		this.setState({modalVisible: visible})
 	}
 
-//Loads CSV from a remote source, sets the parsed data as State to render it as a list later, and runs salary calculation function
+	//Loads CSV from a remote source, sets the parsed data as State to render it as a list later, and runs salary calculation function
 	loadCSV() {
 		var that = this
 		Papa.parse('https://raw.github.com/Aleksefo/rn-salary-calculator/master/src/dataList.csv', {
@@ -38,7 +51,7 @@ export default class App extends React.Component {
 		})
 	}
 
-//Calculates all CSV data into salaries.
+	//Calculates all CSV data into salaries.
 	preCalculateWages(results) {
 		let objs = []
 		let toState = []
@@ -105,31 +118,36 @@ export default class App extends React.Component {
 	// Calculates Difference between Start and End time for extra evening pay
 	calculateEveningHours(start, end) {
 		let eveningHours = 0
+		// Check if Overtime ended the same day or next
 		end = end + (end < start ? 24 : 0)
-		if (30 > end && end > 18) {
-			eveningHours += end - ( start > 18 ? 24 : 18 )
+		// Calculations depending on when Evening hours start and end
+		if ((24+this.hoursEveningEnd) > end && end > this.hoursEveningStart) {
+			eveningHours += end - ( start > this.hoursEveningStart ? 24 : this.hoursEveningStart )
 		}
-		if (30 < end) {
-			eveningHours += 30 - ( start > 18 ? 24 : 18 )
+		if ((24+this.hoursEveningEnd) < end) {
+			eveningHours += (24+this.hoursEveningEnd) - ( start > this.hoursEveningStart ? 24 : this.hoursEveningStart )
 		}
-		if (start > 18) {
+		if (start > this.hoursEveningStart) {
 			eveningHours += 24 - start
 		}
-		if (start < 6) {
-			eveningHours += 6 - start
+		if (start < this.hoursEveningEnd) {
+			eveningHours += this.hoursEveningEnd - start
 		}
 		return eveningHours
 	}
 
-	// Calculates overtime bonus, based on hours worked per day
+	// Calculates overtime bonus, based on hours worked per day. Returns a multiplied number of hours
 	calculateOvertimeHours(hours) {
 		let extraHours = hours
-		if (hours > 8) {
-			extraHours += ( hours - 8 ) * 0.25
-			if (hours > 10) {
-				extraHours += ( hours - 10 ) * 0.25
-				if (hours > 12) {
-					extraHours += ( hours - 12 ) * 0.5
+		let normal = this.hoursNormaltime
+		let firstHours = this.hoursNormaltime + this.rateOvertimeFirstHours
+		let nextHours = this.hoursOvertimeFirstHours + this.hoursOvertimeNextHours + this.hoursNormaltime
+		if (hours > normal) {
+			extraHours += ( hours - normal ) * this.rateOvertimeFirstHours
+			if (hours > (firstHours)) {
+				extraHours += ( hours - firstHours ) * this.rateOvertimeNextHours
+				if (hours > nextHours) {
+					extraHours += ( hours - nextHours ) * this.rateOvertimeRest
 				}
 			}
 		}
@@ -150,7 +168,7 @@ export default class App extends React.Component {
 				/>
 				<FlatList
 					data={this.state.parsedData}
-					// keyExtractor={item => item.Date}
+					keyExtractor={(item, index) => index}
 					renderItem={({item}) =>
 						<ListDays item={item}/>
 					}

@@ -29,7 +29,7 @@ export default class ShowModal extends React.Component {
 					<View>
 						<FlatList
 							data={this.props.users}
-							// keyExtractor={item => item.Date}
+							keyExtractor={(item, index) => index}
 							renderItem={({item}) =>
 								<View style={styles.container}>
 									<Text style={{
