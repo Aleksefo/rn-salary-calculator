@@ -1,10 +1,10 @@
 import React from 'react'
-import {View, StyleSheet, FlatList, Text, Modal, TouchableHighlight, Button} from 'react-native'
+import {View, StyleSheet, FlatList, Text, Modal, Button} from 'react-native'
 
 // Modal components used to show calculated salary data
 export default class CalculateModal extends React.Component {
 	constructor(props) {
-		super(props);
+		super(props)
 		this.state = {
 			modalVisible: props.modalVisible,
 		}
@@ -15,7 +15,7 @@ export default class CalculateModal extends React.Component {
 	}
 
 	render() {
-		// const {} = styles
+		const {modal, flatListTitles, flatList, rowName, rowSalary} = styles
 		return (
 			<View>
 				<Modal
@@ -26,37 +26,34 @@ export default class CalculateModal extends React.Component {
 						this.setModalVisible(false)
 					}}
 				>
-					<View>
+					<View style={modal}>
+						<View style={flatListTitles}>
+							<Text style={rowName}>Person name</Text>
+							<Text style={rowSalary}>Total Salary</Text>
+						</View>
 						<FlatList
 							data={this.props.users}
 							keyExtractor={(item, index) => index}
 							renderItem={({item}) =>
-								<View style={styles.container}>
-									<Text style={{
-										flex: 0.5,
-										flexDirection: 'row',
-										justifyContent: 'center',
-										textAlign: 'right',
-										alignItems: 'center',
-										backgroundColor: 'blue',
-									}}>{item.name}</Text>
-									<Text style={{flex: 3}}>{item.salary}</Text>
-
+								<View style={flatList}>
+									<Text style={rowName}>{item.name}</Text>
+									<Text style={rowSalary}>{item.salary}</Text>
 								</View>
 
 							}
 						/>
-						<TouchableHighlight onPress={() => {
-							this.setModalVisible(!this.state.modalVisible)
-						}}>
-							<Text>Hide Modal</Text>
-						</TouchableHighlight>
+						<Button
+							onPress={() => this.setModalVisible(!this.state.modalVisible)}
+							title="Close"
+							color="#4DA6EF"
+							accessibilityLabel="Learn more about this purple button"
+						/>
 					</View>
 				</Modal>
 				<Button
 					onPress={() => this.setModalVisible(true)}
 					title="Calculate salaries"
-					color="#841584"
+					color="#4DA6EF"
 					accessibilityLabel="Calculate salaries"
 				/>
 			</View>
@@ -65,12 +62,28 @@ export default class CalculateModal extends React.Component {
 }
 
 const styles = StyleSheet.create({
-	container: {
+	modal: {
+		flex: 1,
+		margin: 50,
+		backgroundColor: '#ffd',
+	},
+	flatListTitles: {
+		flexDirection: 'row',
+		backgroundColor: '#4DA6EF',
+	},
+	flatList: {
 		flex: 1,
 		flexDirection: 'row',
 		backgroundColor: '#ffd',
-		// alignItems: 'center',
-		// justifyContent: 'center',
-
+	},
+	rowName: {
+		flex: 1,
+		textAlign: 'left',
+		marginLeft: 10,
+	},
+	rowSalary: {
+		flex: 1,
+		textAlign: 'right',
+		marginRight: 10,
 	},
 })

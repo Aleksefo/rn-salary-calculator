@@ -1,5 +1,5 @@
-import React from 'react';
-import {Button, FlatList, Linking, StyleSheet, Text, TouchableOpacity, View, AsyncStorage} from 'react-native';
+import React from 'react'
+import {Button, FlatList, Linking, StyleSheet, Text, View, AsyncStorage} from 'react-native'
 import Papa from 'papaparse'
 import {Sae} from 'react-native-textinput-effects'
 import {FontAwesome} from '@expo/vector-icons'
@@ -36,18 +36,11 @@ export default class HomeScreen extends React.Component {
 
 	// Navigation options for React Navigation
 	static navigationOptions = ({navigation}) => ({
-		title: 'Salary Calculator',
-
-		headerRight: <TouchableOpacity onPress={() => navigation.navigate('Add')}>
-			{/*<Icons name="ios-car" size={28} color="white" />*/}
-			<Text style={styles.add}>Settings</Text>
-		</TouchableOpacity>,
+		title: 'Salary Calculator'
 	})
 
 	componentDidMount() {
-		// this.checkURL(this.state.url)
 		this.loadSavedData()
-		// this.preCalculateWages(this.state.parsedData)
 	}
 
 	// Loads CSV data from local storage
@@ -94,7 +87,7 @@ export default class HomeScreen extends React.Component {
 		})
 	}
 
-	// Get's callback from AddShiftModal child component
+	// Gets callback from AddShiftModal child component when shift is added
 	handleAddShift() {
 		this.loadSavedData()
 	}
@@ -110,7 +103,7 @@ export default class HomeScreen extends React.Component {
 		}).catch(err => console.error('An error occurred', err))
 	}
 
-	//Calculates all CSV data into salaries.
+	// Calculates all CSV data into salaries.
 	preCalculateWages(results) {
 		let objs = []
 		let toState = []
@@ -189,7 +182,10 @@ export default class HomeScreen extends React.Component {
 		if (start > this.hoursEveningStart) {
 			eveningHours += 24 - start
 		}
-		if (start < this.hoursEveningEnd) {
+		if (start < this.hoursEveningEnd && end < this.hoursEveningEnd) {
+			eveningHours += this.hoursEveningEnd - start - end
+		}
+		if (start < this.hoursEveningEnd && end > this.hoursEveningEnd) {
 			eveningHours += this.hoursEveningEnd - start
 		}
 		return eveningHours
@@ -215,12 +211,13 @@ export default class HomeScreen extends React.Component {
 
 
 	render() {
+		const {textInput, errorText, flatListTitles, rowID, rowName, rowDate, rowStart, rowEnd, topButtonsGroup, buttonsGroup, button} = styles
 
 		// If URL is incorrect an error message appears
 		const parsedError = this.state.parsedError
 		let shiftsList = null
 		if (parsedError) {
-			shiftsList = <Text>Cannot parse salary data. Please check the link for errors.</Text>
+			shiftsList = <Text style={errorText}>Cannot parse salary data. Please check the link for errors.</Text>
 		} else {
 			shiftsList =
 				<FlatList
@@ -239,64 +236,94 @@ export default class HomeScreen extends React.Component {
 						label={'Paste your CSV link here'}
 						iconClass={FontAwesome}
 						iconName={'pencil'}
-						iconColor={'green'}
-						// TextInput props
+						iconColor={'#4DA6EF'}
+						inputStyle={textInput}
 						onChangeText={(url) => this.setState({url})}
 					/>
-					<View style={{flexDirection: 'row'}}>
-						<View style={{flex: 1}}>
+					<View style={topButtonsGroup}>
+						<View style={button}>
 							<Button
 								onPress={() => this.checkURL(this.state.url)}
 								title="Load new CSV"
-								color="#841884"
+								color="#4DA6EF"
 								accessibilityLabel="Load new CSV"
 							/>
 						</View>
-						<View style={{flex: 1}}>
+						<View style={button}>
 							<Button
 								onPress={() => this.setState({parsedData: ''})}
 								title="Clear Data"
-								color="#841884"
+								color="#4DA6EF"
 								accessibilityLabel="Clear Data"
 							/>
 						</View>
 					</View>
-					<Button
-						// onPress={() => this.setModalVisible(true)}
-						onPress={() => console.log(this.state)}
-						title="CurrentState"
-						color="#841884"
-						accessibilityLabel="Learn more about this purple button"
-					/>
-					<Button
-						// onPress={() => this.setModalVisible(true)}
-						onPress={() => this.preCalculateWages(this.state.parsedData)}
-						title="Calculate"
-						color="#841884"
-						accessibilityLabel="Learn more about this purple button"
-					/>
+					<View style={flatListTitles}>
+						<Text style={rowID}>ID</Text>
+						<Text style={rowName}>Person Name</Text>
+						<Text style={rowDate}>Shift Date</Text>
+						<Text style={rowStart}>Start</Text>
+						<Text style={rowEnd}>End</Text>
+					</View>
 					{shiftsList}
 				</View>
-				<View style={{flex: 1, flexDirection: 'row'}}>
-					<View style={{flex: 1}}>
+				<View style={buttonsGroup}>
+					<View style={button}>
 						<CalculateModal modalVisible={this.state.modalVisible} users={this.state.users}/>
 					</View>
-					<View style={{flex: 1}}>
+					<View style={button}>
 						<AddShiftModal modalVisible={this.state.modalVisible} users={this.state.users} onAddShift={this.handleAddShift.bind(this)}/>
 					</View>
 				</View>
 			</View>
-		);
+		)
 	}
 }
 
 const styles = StyleSheet.create({
-	container: {
-		flex: 1,
-		flexDirection: 'row',
-		backgroundColor: '#ffd',
-		// alignItems: 'center',
-		// justifyContent: 'center',
-
+	textInput: {
+		color: '#4DA6EF',
 	},
-});
+	errorText: {
+		flex: 1,
+		color: 'red',
+		textAlign: 'center',
+		fontSize: 15,
+	},
+	flatListTitles: {
+		flexDirection: 'row',
+		backgroundColor: '#4DA6EF',
+	},
+	rowID: {
+		flex: 0.75,
+		textAlign: 'center',
+	},
+	rowName: {
+		flex: 2,
+	},
+	rowDate: {
+		flex: 2,
+		textAlign: 'right',
+	},
+	rowStart: {
+		flex: 1,
+		textAlign: 'right',
+		marginRight: 5,
+	},
+	rowEnd: {
+		flex: 1,
+		textAlign: 'right',
+		marginRight: 10,
+	},
+	topButtonsGroup: {
+		flexDirection: 'row'
+	},
+	buttonsGroup: {
+		flex: 1.5,
+		flexDirection: 'row'
+	},
+	button: {
+		flex: 1,
+		margin: 5
+	},
+})

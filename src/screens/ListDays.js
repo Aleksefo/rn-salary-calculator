@@ -1,40 +1,47 @@
 import React from 'react'
 import {View, StyleSheet, Text} from 'react-native'
 
-// Component used to render CSV entries in FlatList
+// Component used to render CSV shift entries in FlatList
 const ListDays = (props) => {
-	// const {} = styles
+	const {flatList, rowID, rowName, rowDate, rowStart, rowEnd} = styles
 	return (
-		<View style={styles.container}>
-			<Text style={{
-				flex: 0.5,
-				flexDirection: 'row',
-				justifyContent: 'center',
-				textAlign: 'right',
-				alignItems: 'center',
-				backgroundColor: 'blue',
-			}}>{props.item['Person ID']}</Text>
-			<Text style={{flex: 3}}>{props.item['Person Name']}</Text>
-			<Text style={{flex: 2, textAlign: 'right',}}>{props.item.Date}</Text>
-			<Text style={{flex: 1, textAlign: 'right', marginRight: 5,}}>{props.item.Start}</Text>
-			<Text style={{flex: 1}}>{props.item.End}</Text>
-			{/*<Text*/}
-			{/*style={{flex: 1}}>{this.calculateDailyHours(this.timeToDecimal(props.item.Start), this.timeToDecimal(props.item.End))}</Text>*/}
-			{/*<Text*/}
-			{/*style={{flex: 1}}>{this.calculateEveningHours(this.timeToDecimal(props.item.Start), this.timeToDecimal(props.item.End), props.item['Person ID'])}</Text>*/}
+		<View style={flatList}>
+			<Text style={rowID}>{props.item['Person ID']}</Text>
+			<Text style={rowName}>{props.item['Person Name']}</Text>
+			<Text style={rowDate}>{props.item.Date}</Text>
+			<Text style={rowStart}>{props.item.Start}</Text>
+			<Text style={rowEnd}>{props.item.End}</Text>
 		</View>
 	)
 }
 
 const styles = StyleSheet.create({
-	container: {
+	flatList: {
 		flex: 1,
 		flexDirection: 'row',
 		backgroundColor: '#ffd',
-		// alignItems: 'center',
-		// justifyContent: 'center',
-
 	},
-});
+	rowID: {
+		flex: 0.75,
+		textAlign: 'center',
+	},
+	rowName: {
+		flex: 2,
+	},
+	rowDate: {
+		flex: 2,
+		textAlign: 'right',
+	},
+	rowStart: {
+		flex: 1,
+		textAlign: 'right',
+		marginRight: 5,
+	},
+	rowEnd: {
+		flex: 1,
+		textAlign: 'right',
+		marginRight: 10,
+	},
+})
 
 export default ListDays
