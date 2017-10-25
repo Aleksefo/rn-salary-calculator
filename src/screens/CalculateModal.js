@@ -2,7 +2,7 @@ import React from 'react'
 import {View, StyleSheet, FlatList, Text, Modal, TouchableHighlight, Button} from 'react-native'
 
 // Modal components used to show calculated salary data
-export default class ShowModal extends React.Component {
+export default class CalculateModal extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {

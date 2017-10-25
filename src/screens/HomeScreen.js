@@ -4,7 +4,8 @@ import Papa from 'papaparse'
 import {Sae} from 'react-native-textinput-effects'
 import {FontAwesome} from '@expo/vector-icons'
 import ListDays from './ListDays'
-import ShowModal from './ShowModal'
+import CalculateModal from './CalculateModal'
+import AddShiftModal from './AddShiftModal'
 
 
 export default class HomeScreen extends React.Component {
@@ -44,8 +45,9 @@ export default class HomeScreen extends React.Component {
 	})
 
 	componentDidMount() {
-		this.checkURL(this.state.url)
+		// this.checkURL(this.state.url)
 		this.loadSavedData()
+		// this.preCalculateWages(this.state.parsedData)
 	}
 
 	// Loads CSV data from local storage
@@ -55,6 +57,7 @@ export default class HomeScreen extends React.Component {
 				.then(JSON.parse).then(CSVData => {
 					if (CSVData !== null) {
 						this.setState({parsedData: CSVData})
+						this.preCalculateWages(CSVData)
 					} else {
 						console.log('nothing to load')
 					}
@@ -63,6 +66,7 @@ export default class HomeScreen extends React.Component {
 			console.log('loadSavedData error ' + error)
 		}
 	}
+
 	// Saves CSV data to local storage
 	async saveDataLocally(data) {
 		try {
@@ -90,6 +94,11 @@ export default class HomeScreen extends React.Component {
 		})
 	}
 
+	// Get's callback from AddShiftModal child component
+	handleAddShift() {
+		this.loadSavedData()
+	}
+
 	// Checks URL for being an actual URL
 	checkURL(url) {
 		Linking.canOpenURL(url).then(supported => {
@@ -98,7 +107,7 @@ export default class HomeScreen extends React.Component {
 			} else {
 				return this.loadCSV(url)
 			}
-		}).catch(err => console.error('An error occurred', err));
+		}).catch(err => console.error('An error occurred', err))
 	}
 
 	//Calculates all CSV data into salaries.
@@ -232,22 +241,26 @@ export default class HomeScreen extends React.Component {
 						iconName={'pencil'}
 						iconColor={'green'}
 						// TextInput props
-						autoCapitalize={'none'}
-						autoCorrect={false}
 						onChangeText={(url) => this.setState({url})}
 					/>
-					<Button
-						onPress={() => this.checkURL(this.state.url)}
-						title="Load new CSV"
-						color="#841884"
-						accessibilityLabel="Load new CSV"
-					/>
-					<Button
-						onPress={() => this.setState({parsedData: ''})}
-						title="Clear Data"
-						color="#841884"
-						accessibilityLabel="Clear Data"
-					/>
+					<View style={{flexDirection: 'row'}}>
+						<View style={{flex: 1}}>
+							<Button
+								onPress={() => this.checkURL(this.state.url)}
+								title="Load new CSV"
+								color="#841884"
+								accessibilityLabel="Load new CSV"
+							/>
+						</View>
+						<View style={{flex: 1}}>
+							<Button
+								onPress={() => this.setState({parsedData: ''})}
+								title="Clear Data"
+								color="#841884"
+								accessibilityLabel="Clear Data"
+							/>
+						</View>
+					</View>
 					<Button
 						// onPress={() => this.setModalVisible(true)}
 						onPress={() => console.log(this.state)}
@@ -255,10 +268,22 @@ export default class HomeScreen extends React.Component {
 						color="#841884"
 						accessibilityLabel="Learn more about this purple button"
 					/>
+					<Button
+						// onPress={() => this.setModalVisible(true)}
+						onPress={() => this.preCalculateWages(this.state.parsedData)}
+						title="Calculate"
+						color="#841884"
+						accessibilityLabel="Learn more about this purple button"
+					/>
 					{shiftsList}
 				</View>
-				<View style={{flex: 1}}>
-					<ShowModal modalVisible={this.state.modalVisible} users={this.state.users}/>
+				<View style={{flex: 1, flexDirection: 'row'}}>
+					<View style={{flex: 1}}>
+						<CalculateModal modalVisible={this.state.modalVisible} users={this.state.users}/>
+					</View>
+					<View style={{flex: 1}}>
+						<AddShiftModal modalVisible={this.state.modalVisible} users={this.state.users} onAddShift={this.handleAddShift.bind(this)}/>
+					</View>
 				</View>
 			</View>
 		);
