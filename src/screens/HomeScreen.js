@@ -52,7 +52,7 @@ export default class HomeScreen extends React.Component {
 						this.setState({parsedData: CSVData})
 						this.preCalculateWages(CSVData)
 					} else {
-						console.log('nothing to load')
+						this.loadCSV(this.state.url)
 					}
 				})
 		} catch (error) {
